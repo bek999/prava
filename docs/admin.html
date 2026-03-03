@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - ПДД Карточки</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="container">
+            <h1 class="logo">🔐 Админ-панель</h1>
+            <nav>
+                <a href="./index.html" class="nav-link">На главную</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Auth Section -->
+        <div id="login-section" class="admin-login-container">
+            <h2 style="margin-bottom: 1.5rem; text-align: center;">Вход в систему</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Логин</label>
+                    <input type="text" id="username" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" id="password" class="form-input" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Войти</button>
+            </form>
+        </div>
+
+        <!-- Dashboard Section (Hidden by default) -->
+        <div id="dashboard-section" style="display: none;">
+
+            <div class="admin-header-actions">
+                <h2>Управление карточками</h2>
+                <button id="logout-btn" class="btn btn-danger btn-sm">Выйти</button>
+            </div>
+
+            <!-- Add Card Form -->
+            <div
+                style="background: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: var(--shadow-sm); margin-bottom: 3rem; border: 1px solid var(--border-color);">
+                <h3 style="margin-bottom: 1.5rem;">Добавить новую карточку</h3>
+                <form id="add-card-form">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <!-- Left Column: Inputs -->
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Вопрос (Что изображено?)</label>
+                                <input type="text" name="question" class="form-input"
+                                    placeholder="Например: Что означает этот знак?" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Правильный ответ</label>
+                                <textarea name="answer" class="form-textarea" rows="2"
+                                    placeholder="Например: Уступи дорогу" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Пояснение (опционально)</label>
+                                <textarea name="details" class="form-textarea" rows="3"
+                                    placeholder="Дополнительная информация..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Категория</label>
+                                <select name="category" class="form-select">
+                                    <option value="Предупреждающие">Предупреждающие</option>
+                                    <option value="Приоритета">Приоритета</option>
+                                    <option value="Запрещающие">Запрещающие</option>
+                                    <option value="Предписывающие">Предписывающие</option>
+                                    <option value="Информационные">Информационные</option>
+                                    <option value="Сервис">Знаки сервиса</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Drag & Drop -->
+                        <div>
+                            <label class="form-label">Изображение знака</label>
+                            <div id="drop-zone" class="drag-drop-zone">
+                                <div class="drag-drop-text" id="drop-zone-text">
+                                    <p>Перетащите изображение сюда</p>
+                                    <p style="font-size: 0.875rem; color: #94a3b8;">или кликните для выбора</p>
+                                    <p style="font-size: 0.75rem; margin-top: 0.5rem; color: #cbd5e1;">PNG, JPG, SVG до
+                                        5MB</p>
+                                </div>
+                                <input type="file" id="file-input" name="image"
+                                    accept="image/png, image/jpeg, image/jpg, image/svg+xml" style="display: none;">
+                                <img id="image-preview" class="drag-drop-preview" alt="Preview">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2rem; text-align: right;">
+                        <button type="submit" class="btn">Сохранить карточку</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Cards List -->
+            <div
+                style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1rem;">
+                <h3>Список карточек</h3>
+                <!-- Фильтр по категориям -->
+                <div class="category-filters" id="admin-category-filters" style="margin-bottom:0;">
+                    <button class="category-btn active" onclick="adminFilterCategory('all')">Все</button>
+                    <button class="category-btn"
+                        onclick="adminFilterCategory('Предупреждающие')">Предупреждающие</button>
+                    <button class="category-btn" onclick="adminFilterCategory('Приоритета')">Приоритета</button>
+                    <button class="category-btn" onclick="adminFilterCategory('Запрещающие')">Запрещающие</button>
+                    <button class="category-btn" onclick="adminFilterCategory('Предписывающие')">Предписывающие</button>
+                    <button class="category-btn" onclick="adminFilterCategory('Информационные')">Информационные</button>
+                    <button class="category-btn" onclick="adminFilterCategory('Сервис')">Знаки сервиса</button>
+                </div>
+            </div>
+            <div class="admin-table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Фото</th>
+                            <th>Вопрос</th>
+                            <th>Ответ</th>
+                            <th>Категория</th>
+                            <th style="width: 150px; text-align: right;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cards-table-body">
+                        <!-- Rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto; padding:2rem 1rem;">
+        <div
+            style="background:#fff; border-radius:16px; max-width:620px; margin:0 auto; padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,0.2); position:relative;">
+            <button onclick="closeEditModal()"
+                style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:#64748b;">✕</button>
+            <h3 style="margin-bottom:1.5rem;">Редактировать карточку</h3>
+            <form id="edit-card-form">
+                <input type="hidden" id="edit-card-id">
+                <div class="form-group">
+                    <label class="form-label">Вопрос</label>
+                    <input type="text" id="edit-question" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Правильный ответ</label>
+                    <textarea id="edit-answer" class="form-textarea" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пояснение (опционально)</label>
+                    <textarea id="edit-details" class="form-textarea" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Категория</label>
+                    <select id="edit-category" class="form-select">
+                        <option value="Предупреждающие">Предупреждающие</option>
+                        <option value="Приоритета">Приоритета</option>
+                        <option value="Запрещающие">Запрещающие</option>
+                        <option value="Предписывающие">Предписывающие</option>
+                        <option value="Информационные">Информационные</option>
+                        <option value="Сервис">Знаки сервиса</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Изображение (оставьте пустым, чтобы не менять)</label>
+                    <div id="edit-drop-zone" class="drag-drop-zone">
+                        <div class="drag-drop-text" id="edit-drop-zone-text">
+                            <p>Перетащите изображение сюда</p>
+                            <p style="font-size:0.875rem;color:#94a3b8;">или кликните для выбора</p>
+                        </div>
+                        <input type="file" id="edit-file-input" accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+                            style="display:none;">
+                        <img id="edit-image-preview" class="drag-drop-preview" alt="Preview">
+                    </div>
+                </div>
+                <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1.5rem;">
+                    <button type="button" onclick="closeEditModal()"
+                        style="background:none;border:1.5px solid var(--border-color);border-radius:8px;padding:0.6rem 1.2rem;font-family:inherit;cursor:pointer;font-weight:500;">Отмена</button>
+                    <button type="submit" class="btn">Сохранить изменения</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="admin.js"></script>
+</body>
+
+</html>
